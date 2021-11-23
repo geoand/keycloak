@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.jboss.logging.Logger;
 import org.keycloak.common.Profile;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
 import org.keycloak.quarkus.runtime.integration.QuarkusKeycloakSessionFactory;
@@ -36,6 +35,9 @@ import org.keycloak.quarkus.runtime.storage.infinispan.CacheInitializer;
 
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
+import io.quarkus.smallrye.metrics.runtime.SmallRyeMetricsHandler;
+import io.vertx.core.Handler;
+import io.vertx.ext.web.RoutingContext;
 import liquibase.logging.LogFactory;
 import liquibase.servicelocator.ServiceLocator;
 
@@ -102,5 +104,13 @@ public class KeycloakRecorder {
 
     public RuntimeValue<CacheInitializer> createCacheInitializer(String config) {
         return new RuntimeValue<>(new CacheInitializer(config));
+    }
+
+    public Handler<RoutingContext> createMetricsHandler(String path) {
+        SmallRyeMetricsHandler metricsHandler = new SmallRyeMetricsHandler();
+
+        metricsHandler.setMetricsPath(path);
+
+        return metricsHandler;
     }
 }
